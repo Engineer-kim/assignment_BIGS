@@ -1,5 +1,7 @@
 package im.bigs.pg.infra.persistence.payment.adapter
 
+import im.bigs.pg.application.payment.port.out.PaymentAndSummaryParam
+import im.bigs.pg.application.payment.port.out.PaymentAndSummaryResult
 import im.bigs.pg.application.payment.port.out.PaymentOutPort
 import im.bigs.pg.application.payment.port.out.PaymentPage
 import im.bigs.pg.application.payment.port.out.PaymentQuery
@@ -7,11 +9,18 @@ import im.bigs.pg.application.payment.port.out.PaymentSummaryFilter
 import im.bigs.pg.application.payment.port.out.PaymentSummaryProjection
 import im.bigs.pg.domain.payment.Payment
 import im.bigs.pg.domain.payment.PaymentStatus
+import im.bigs.pg.domain.payment.PaymentSummary
+import im.bigs.pg.infra.persistence.payment.adapter.util.CursorUtils
 import im.bigs.pg.infra.persistence.payment.entity.PaymentEntity
 import im.bigs.pg.infra.persistence.payment.repository.PaymentJpaRepository
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 import java.time.ZoneOffset
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalDateTime
 
 /** PaymentOutPort 구현체(JPA 기반). */
 @Component
@@ -56,6 +65,57 @@ class PaymentPersistenceAdapter(
         val totalAmount = arr[1] as java.math.BigDecimal
         val totalNet = arr[2] as java.math.BigDecimal
         return PaymentSummaryProjection(cnt, totalAmount, totalNet)
+    }
+
+    //과제2
+    override fun paymentAndSummary(param: PaymentAndSummaryParam): PaymentAndSummaryResult {
+        val (cursorCreatedAt, cursorId) = CursorUtils.decode(param.cursor)
+        val cursorCreatedAtInstant: Instant? = cursorCreatedAt?.toInstant(ZoneOffset.UTC)
+        val fromAt: Instant? = param.from?.toInstant(ZoneOffset.UTC)
+        val toAt: Instant? = param.to?.toInstant(ZoneOffset.UTC)
+        val statusName = param.status?.name
+
+        val summaryResults = repo.summary(
+            partnerId = param.partnerId,
+            status = statusName,
+            fromAt = fromAt,
+            toAt = toAt,
+        )
+        val summaryArr = summaryResults.first()
+        val summary = PaymentSummaryProjection(
+            count = (summaryArr[0] as Number).toLong(),
+            totalAmount = summaryArr[1] as BigDecimal,
+            totalNetAmount = summaryArr[2] as BigDecimal,
+        )
+
+        val pageSize = param.limit
+        val listWithPagination = repo.pageBy(
+            partnerId = param.partnerId,
+            status = statusName,
+            fromAt = fromAt,
+            toAt = toAt,
+            cursorCreatedAt = cursorCreatedAtInstant,
+            cursorId = cursorId,
+            org = PageRequest.of(0, pageSize + 1),
+        )
+
+        val hasNext = listWithPagination.size > pageSize
+        val items = listWithPagination.take(pageSize)
+        val last = items.lastOrNull()
+
+        val nextCursor: String? = last?.let {
+            CursorUtils.encode(
+                createdAt = LocalDateTime.ofInstant(it.createdAt, ZoneOffset.UTC),
+                id = it.id!!,
+            )
+        }
+
+        return PaymentAndSummaryResult(
+            items = items.map { it.toDomain() },
+            summary = summary,
+            nextCursor = nextCursor,
+            hasNext = hasNext,
+        )
     }
 
     /** 도메인 → 엔티티 매핑. */

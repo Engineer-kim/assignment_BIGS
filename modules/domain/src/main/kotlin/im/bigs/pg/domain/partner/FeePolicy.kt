@@ -2,6 +2,7 @@ package im.bigs.pg.domain.partner
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDateTime
 
 /**
@@ -19,7 +20,7 @@ data class FeePolicy(
     val id: Long? = null,
     val partnerId: Long,
     @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    val effectiveFrom: LocalDateTime,
+    val effectiveFrom: Instant,// UTC 기준으로 통일 (LocalDateTime은 시간이 불분명)
     val percentage: BigDecimal, // e.g., 0.0235 (2.35%)
     val fixedFee: BigDecimal? = null,
 )

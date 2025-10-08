@@ -12,4 +12,7 @@ interface PaymentOutPort {
     fun findBy(query: PaymentQuery): PaymentPage
 
     fun summary(filter: PaymentSummaryFilter): PaymentSummaryProjection
+
+    //과제2
+    fun paymentAndSummary(param: PaymentAndSummaryParam): PaymentAndSummaryResult
 }
