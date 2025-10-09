@@ -1,26 +1,17 @@
 package im.bigs.pg.infra.persistence.payment.adapter
 
-import im.bigs.pg.application.payment.port.out.PaymentAndSummaryParam
-import im.bigs.pg.application.payment.port.out.PaymentAndSummaryResult
-import im.bigs.pg.application.payment.port.out.PaymentOutPort
-import im.bigs.pg.application.payment.port.out.PaymentPage
-import im.bigs.pg.application.payment.port.out.PaymentQuery
-import im.bigs.pg.application.payment.port.out.PaymentSummaryFilter
-import im.bigs.pg.application.payment.port.out.PaymentSummaryProjection
+import im.bigs.pg.application.payment.port.out.*
 import im.bigs.pg.domain.payment.Payment
 import im.bigs.pg.domain.payment.PaymentStatus
-import im.bigs.pg.domain.payment.PaymentSummary
 import im.bigs.pg.infra.persistence.payment.adapter.util.CursorUtils
 import im.bigs.pg.infra.persistence.payment.entity.PaymentEntity
 import im.bigs.pg.infra.persistence.payment.repository.PaymentJpaRepository
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
-import java.time.ZoneOffset
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 /** PaymentOutPort 구현체(JPA 기반). */
 @Component

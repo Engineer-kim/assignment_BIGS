@@ -73,6 +73,10 @@ class PaymentController(
      * @param limit 페이지 크기(기본 20)
      * @return 목록/통계/커서 정보
      */
+    /**
+     * http://localhost:8080/api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01%2000:00:00&to=2025-01-31%2023:59:59&limit=5
+     * 테스트 URL(포스트맨으로)
+     */
     @GetMapping
     fun query(
         @RequestParam(required = false) partnerId: Long?,
