@@ -7,6 +7,8 @@ import im.bigs.pg.api.payment.dto.CreatePaymentRequest
 import im.bigs.pg.api.payment.dto.PaymentResponse
 import im.bigs.pg.api.payment.dto.QueryResponse
 import im.bigs.pg.api.payment.dto.Summary
+import im.bigs.pg.application.payment.port.out.PaymentQuery
+import im.bigs.pg.domain.payment.PaymentStatus
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -78,17 +80,42 @@ class PaymentController(
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") from: LocalDateTime?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") to: LocalDateTime?,
         @RequestParam(required = false) cursor: String?,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") cursorCreatedAt: LocalDateTime?,
+        @RequestParam(required = false) cursorId: Long?,
         @RequestParam(defaultValue = "20") limit: Int,
     ): ResponseEntity<QueryResponse> {
-        val res = queryPaymentsUseCase.query(
-            QueryFilter(partnerId, status, from, to, cursor, limit),
+//        val res = queryPaymentsUseCase.query(
+//            QueryFilter(partnerId, status, from, to, cursor, limit),
+//        )
+//        return ResponseEntity.ok(
+//            QueryResponse(
+//                items = res.items.map { PaymentResponse.from(it) },
+//                summary = Summary(res.summary.count, res.summary.totalAmount, res.summary.totalNetAmount),
+//                nextCursor = res.nextCursor,
+//                hasNext = res.hasNext,
+//            ),
+//        )
+        val paymentQuery = PaymentQuery(
+            partnerId = partnerId,
+            status = status?.let { PaymentStatus.valueOf(it) },
+            from = from,
+            to = to,
+            limit = limit,
+            cursorCreatedAt = cursorCreatedAt,
+            cursorId = cursorId,
         )
+        val result = queryPaymentsUseCase.paymentAndSummary(paymentQuery)
+
         return ResponseEntity.ok(
             QueryResponse(
-                items = res.items.map { PaymentResponse.from(it) },
-                summary = Summary(res.summary.count, res.summary.totalAmount, res.summary.totalNetAmount),
-                nextCursor = res.nextCursor,
-                hasNext = res.hasNext,
+                items = result.items.map { PaymentResponse.from(it) },
+                summary = Summary(
+                    count = result.summary.count,
+                    totalAmount = result.summary.totalAmount,
+                    totalNetAmount = result.summary.totalNetAmount
+                ),
+                nextCursor = result.nextCursor,
+                hasNext = result.hasNext,
             ),
         )
     }

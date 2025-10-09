@@ -1,6 +1,10 @@
 package im.bigs.pg.application.payment.service
 
 import im.bigs.pg.application.payment.port.`in`.*
+import im.bigs.pg.application.payment.port.out.PaymentAndSummaryParam
+import im.bigs.pg.application.payment.port.out.PaymentAndSummaryResult
+import im.bigs.pg.application.payment.port.out.PaymentOutPort
+import im.bigs.pg.application.payment.port.out.PaymentQuery
 import im.bigs.pg.domain.payment.PaymentSummary
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -12,7 +16,9 @@ import java.util.Base64
  * - 통계는 조회 조건과 동일한 집합을 대상으로 계산됩니다.
  */
 @Service
-class QueryPaymentsService : QueryPaymentsUseCase {
+class QueryPaymentsService(
+    private val paymentOutPort: PaymentOutPort
+) : QueryPaymentsUseCase {
     /**
      * 필터를 기반으로 결제 내역을 조회합니다.
      *
@@ -50,5 +56,21 @@ class QueryPaymentsService : QueryPaymentsUseCase {
         } catch (e: Exception) {
             null to null
         }
+    }
+
+    override fun paymentAndSummary(param: PaymentQuery): PaymentAndSummaryResult {
+        val outPortParam = PaymentAndSummaryParam(
+            partnerId = param.partnerId,
+            status = param.status,
+            from = param.from,
+            to = param.to,
+            limit = param.limit,
+            cursor = encodeCursor(
+                createdAt = param.cursorCreatedAt?.toInstant(java.time.ZoneOffset.UTC),
+                id = param.cursorId
+            ),
+        )
+
+        return paymentOutPort.paymentAndSummary(outPortParam)
     }
 }
