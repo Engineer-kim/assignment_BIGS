@@ -1,5 +1,6 @@
 package im.bigs.pg.domain.calculation
 
+import im.bigs.pg.domain.partner.FeePolicy
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -21,12 +22,24 @@ object FeeCalculator {
      * @return Pair(feeAmount, netAmount) — (수수료, 공제후 금액)
      * @throws IllegalArgumentException amount 또는 rate 가 음수인 경우
      */
-    fun calculateFee(amount: BigDecimal, rate: BigDecimal, fixed: BigDecimal? = null): Pair<BigDecimal, BigDecimal> {
+//    fun calculateFee(amount: BigDecimal, rate: BigDecimal, fixed: BigDecimal? = null): Pair<BigDecimal, BigDecimal> {
+//        require(amount >= BigDecimal.ZERO) { "amount must be >= 0" }
+//        require(rate >= BigDecimal.ZERO) { "rate must be >= 0" }
+//        val percentageFee = amount.multiply(rate).setScale(0, RoundingMode.HALF_UP)
+//        val fee = if (fixed != null) percentageFee + fixed else percentageFee
+//        val net = amount - fee
+//        return fee to net
+//    }
+    //과제3 - 제휴사별 수수료 정책 적용
+    fun calculateFee(amount: BigDecimal, policy: FeePolicy): Pair<BigDecimal, BigDecimal> {
         require(amount >= BigDecimal.ZERO) { "amount must be >= 0" }
-        require(rate >= BigDecimal.ZERO) { "rate must be >= 0" }
-        val percentageFee = amount.multiply(rate).setScale(0, RoundingMode.HALF_UP)
-        val fee = if (fixed != null) percentageFee + fixed else percentageFee
-        val net = amount - fee
+        require(policy.percentage >= BigDecimal.ZERO) { "rate must be >= 0" }
+        //TO DO: fixedFee가 널러블함 그러므로 처리 필요함 => 했음
+        val realFixedFee = policy.fixedFee ?: BigDecimal.ZERO
+
+        val fee = amount.multiply(policy.percentage).setScale(0, RoundingMode.HALF_UP).add(realFixedFee).setScale(0, RoundingMode.HALF_UP)
+        val net = amount.subtract(fee).setScale(0, RoundingMode.HALF_UP)
         return fee to net
     }
+
 }

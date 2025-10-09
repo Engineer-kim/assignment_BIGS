@@ -74,7 +74,7 @@ class PaymentController(
      * @return 목록/통계/커서 정보
      */
     /**
-     * http://localhost:8080/api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01%2000:00:00&to=2025-01-31%2023:59:59&limit=5
+     * http://localhost:8080/api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01%2000:00:00&to=2025-01-31%2023:59:59&limit=5&cursor=
      * 테스트 URL(포스트맨으로)
      */
     @GetMapping
@@ -83,7 +83,7 @@ class PaymentController(
         @RequestParam(required = false) status: String?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") from: LocalDateTime?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") to: LocalDateTime?,
-        @RequestParam(required = false) cursor: String?,
+//        @RequestParam(required = false) cursor: String?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") cursorCreatedAt: LocalDateTime?,
         @RequestParam(required = false) cursorId: Long?,
         @RequestParam(defaultValue = "20") limit: Int,

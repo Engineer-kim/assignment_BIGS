@@ -8,9 +8,11 @@ import im.bigs.pg.application.payment.port.out.PaymentOutPort
 import im.bigs.pg.application.pg.port.out.PgApproveRequest
 import im.bigs.pg.application.pg.port.out.PgClientOutPort
 import im.bigs.pg.domain.calculation.FeeCalculator
+import im.bigs.pg.domain.partner.FeePolicy
 import im.bigs.pg.domain.payment.Payment
 import im.bigs.pg.domain.payment.PaymentStatus
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 /**
  * 결제 생성 유스케이스 구현체.
@@ -46,13 +48,18 @@ class PaymentService(
                 productName = command.productName,
             ),
         )
-        val hardcodedRate = java.math.BigDecimal("0.0300")
-        val hardcodedFixed = java.math.BigDecimal("100")
-        val (fee, net) = FeeCalculator.calculateFee(command.amount, hardcodedRate, hardcodedFixed)
+//        val hardcodedRate = java.math.BigDecimal("0.0300")
+//        val hardcodedFixed = java.math.BigDecimal("100")
+        val policy = feePolicyRepository.findEffectivePolicy(
+            partnerId = partner.id,
+            Instant.now() //이게 쫌 고민이긴함 , UTC로 할지 KST로 할지 (현재는 UTC임
+        ) ?: throw IllegalStateException("해당 파트너아이디의 수수료 로직에 문제가 발생했습니다. 파트너아이디는 -> ${partner.id}")
+
+        val (fee, net) = FeeCalculator.calculateFee(command.amount, policy = policy)
         val payment = Payment(
             partnerId = partner.id,
             amount = command.amount,
-            appliedFeeRate = hardcodedRate,
+            appliedFeeRate = policy.percentage,
             feeAmount = fee,
             netAmount = net,
             cardBin = command.cardBin,
