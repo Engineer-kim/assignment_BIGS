@@ -13,13 +13,26 @@ import jakarta.persistence.Table
  */
 @Entity
 @Table(name = "partner")
-class PartnerEntity(
+class PartnerEntity() {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    var id: Long? = null
+    
+    //아직 초기화되지 않은 필드를 안전하게 나중에 채우도록 허용하기 위함
     @Column(nullable = false, unique = true)
-    var code: String,
+    lateinit var code: String
+
     @Column(nullable = false)
-    var name: String,
+    lateinit var name: String
+
     @Column(nullable = false)
-    var active: Boolean = true,
-)
+    var active: Boolean = true
+
+    //의미없는 값드가면 안되니까 require로 체크
+    constructor(code: String, name: String, active: Boolean = true) : this() {
+        require(code.isNotBlank()) { "code값은 공백 X" }
+        require(name.isNotBlank()) { "name값은 공백 X" }
+        this.code = code
+        this.name = name
+        this.active = active
+    }
+}
