@@ -1,12 +1,12 @@
 package im.bigs.pg.api.payment
 
-import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
-import im.bigs.pg.application.payment.port.`in`.PaymentCommand
-import im.bigs.pg.application.payment.port.`in`.*
 import im.bigs.pg.api.payment.dto.CreatePaymentRequest
 import im.bigs.pg.api.payment.dto.PaymentResponse
 import im.bigs.pg.api.payment.dto.QueryResponse
 import im.bigs.pg.api.payment.dto.Summary
+import im.bigs.pg.application.payment.port.`in`.*
+import im.bigs.pg.application.payment.port.`in`.PaymentCommand
+import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.out.PaymentQuery
 import im.bigs.pg.domain.payment.PaymentStatus
 import org.springframework.format.annotation.DateTimeFormat
@@ -34,10 +34,8 @@ class PaymentController(
 ) {
 
     /** 결제 생성 요청 페이로드(간소화된 필드). */
-    
 
     /** API 응답을 위한 변환용 DTO. 도메인 모델을 그대로 노출하지 않습니다. */
-    
 
     /**
      * 결제 생성.
@@ -54,7 +52,7 @@ class PaymentController(
                 cardBin = req.cardBin,
                 cardLast4 = req.cardLast4,
                 productName = req.productName,
-                //연동을 위한 필드 추가
+                // 연동을 위한 필드 추가
                 cardNumber = req.cardNumber,
                 birthDate = req.birthDate,
                 expiry = req.expiry,
@@ -65,7 +63,6 @@ class PaymentController(
     }
 
     /** 목록 + 통계를 포함한 조회 응답. */
-    
 
     /**
      * 결제 조회(커서 기반 페이지네이션 + 통계).

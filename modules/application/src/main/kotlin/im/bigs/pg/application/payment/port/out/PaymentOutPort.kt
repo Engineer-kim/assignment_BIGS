@@ -13,6 +13,6 @@ interface PaymentOutPort {
 
     fun summary(filter: PaymentSummaryFilter): PaymentSummaryProjection
 
-    //과제2
+    // 과제2
     fun paymentAndSummary(param: PaymentAndSummaryParam): PaymentAndSummaryResult
 }

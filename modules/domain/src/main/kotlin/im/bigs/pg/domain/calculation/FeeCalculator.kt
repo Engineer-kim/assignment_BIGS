@@ -30,16 +30,15 @@ object FeeCalculator {
 //        val net = amount - fee
 //        return fee to net
 //    }
-    //과제3 - 제휴사별 수수료 정책 적용
+    // 과제3 - 제휴사별 수수료 정책 적용
     fun calculateFee(amount: BigDecimal, policy: FeePolicy): Pair<BigDecimal, BigDecimal> {
         require(amount >= BigDecimal.ZERO) { "amount must be >= 0" }
         require(policy.percentage >= BigDecimal.ZERO) { "rate must be >= 0" }
-        //TO DO: fixedFee가 널러블함 그러므로 처리 필요함 => 했음
+        // TO DO: fixedFee가 널러블함 그러므로 처리 필요함 => 했음
         val realFixedFee = policy.fixedFee ?: BigDecimal.ZERO
 
         val fee = amount.multiply(policy.percentage).setScale(0, RoundingMode.HALF_UP).add(realFixedFee).setScale(0, RoundingMode.HALF_UP)
         val net = amount.subtract(fee).setScale(0, RoundingMode.HALF_UP)
         return fee to net
     }
-
 }

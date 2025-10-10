@@ -58,7 +58,7 @@ class PaymentPersistenceAdapter(
         return PaymentSummaryProjection(cnt, totalAmount, totalNet)
     }
 
-    //과제2
+    // 과제2
     override fun paymentAndSummary(param: PaymentAndSummaryParam): PaymentAndSummaryResult {
         val (cursorCreatedAt, cursorId) = CursorUtils.decode(param.cursor)
         val cursorCreatedAtInstant: Instant? = cursorCreatedAt?.toInstant(ZoneOffset.UTC)

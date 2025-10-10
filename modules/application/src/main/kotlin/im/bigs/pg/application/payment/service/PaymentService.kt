@@ -2,15 +2,13 @@ package im.bigs.pg.application.payment.service
 
 import im.bigs.pg.application.partner.port.out.FeePolicyOutPort
 import im.bigs.pg.application.partner.port.out.PartnerOutPort
-import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.`in`.PaymentCommand
+import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.out.PaymentOutPort
-import im.bigs.pg.application.pg.port.out.PgApproveRequest
-import im.bigs.pg.application.pg.port.out.PgClientOutPort
+import im.bigs.pg.application.payment.port.out.TestPgApprovalCommand
+import im.bigs.pg.application.pg.port.out.TestPgClientOutPort
 import im.bigs.pg.domain.calculation.FeeCalculator
-import im.bigs.pg.domain.partner.FeePolicy
 import im.bigs.pg.domain.payment.Payment
-import im.bigs.pg.domain.payment.PaymentStatus
 import org.springframework.stereotype.Service
 import java.time.Instant
 
@@ -24,35 +22,39 @@ class PaymentService(
     private val partnerRepository: PartnerOutPort,
     private val feePolicyRepository: FeePolicyOutPort,
     private val paymentRepository: PaymentOutPort,
-    private val pgClients: List<PgClientOutPort>,
+//    private val pgClients: List<PgClientOutPort>,
+    private val testPgClients: List<TestPgClientOutPort>,
 ) : PaymentUseCase {
     /**
      * 결제 승인/수수료 계산/저장을 순차적으로 수행합니다.
      * - 현재 예시 구현은 하드코드된 수수료(3% + 100)로 계산합니다.
      * - 과제: 제휴사별 수수료 정책을 적용하도록 개선해 보세요.
+     * - TestPG 연동후 결과값 같이 저장하기 위해 로직 변경,
+     * - PG 승인 결과값 3개 =>  approvalCode ,approvedAt,  status
      */
     override fun pay(command: PaymentCommand): Payment {
         val partner = partnerRepository.findById(command.partnerId)
             ?: throw IllegalArgumentException("Partner not found: ${command.partnerId}")
         require(partner.active) { "Partner is inactive: ${partner.id}" }
 
-        val pgClient = pgClients.firstOrNull { it.supports(partner.id) }
+        val testPgClients = testPgClients.firstOrNull { it.supports(partner.id) }
             ?: throw IllegalStateException("No PG client for partner ${partner.id}")
 
-        val approve = pgClient.approve(
-            PgApproveRequest(
-                partnerId = partner.id,
+        val approve = testPgClients.approve(
+            TestPgApprovalCommand(
                 amount = command.amount,
-                cardBin = command.cardBin,
-                cardLast4 = command.cardLast4,
-                productName = command.productName,
+                cardNumber = command.cardNumber,
+                birthDate = command.birthDate,
+                expiry = command.expiry,
+                password = command.password,
             ),
         )
+
 //        val hardcodedRate = java.math.BigDecimal("0.0300")
 //        val hardcodedFixed = java.math.BigDecimal("100")
         val policy = feePolicyRepository.findEffectivePolicy(
             partnerId = partner.id,
-            Instant.now() //이게 쫌 고민이긴함 , UTC로 할지 KST로 할지 (현재는 UTC임
+            Instant.now() // 이게 쫌 고민이긴함 , UTC로 할지 KST로 할지 (현재는 UTC임
         ) ?: throw IllegalStateException("해당 파트너아이디의 수수료 로직에 문제가 발생했습니다. 파트너아이디는 -> ${partner.id}")
 
         val (fee, net) = FeeCalculator.calculateFee(command.amount, policy = policy)
@@ -66,8 +68,10 @@ class PaymentService(
             cardLast4 = command.cardLast4,
             approvalCode = approve.approvalCode,
             approvedAt = approve.approvedAt,
-            status = PaymentStatus.APPROVED,
+            status = approve.status,
         )
+
+        // test PG 연동후 저장해야할 필드(응답)값 3개 =>  approvalCode ,approvedAt,  status
 
         return paymentRepository.save(payment)
     }

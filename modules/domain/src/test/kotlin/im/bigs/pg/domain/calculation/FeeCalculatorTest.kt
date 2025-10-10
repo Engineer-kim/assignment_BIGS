@@ -18,7 +18,7 @@ class 수수료계산기Test {
         val policy = FeePolicy(
             partnerId = 1L,
             effectiveFrom = TEST_TIME,
-            //기존 테스트코드와 동일하게
+            // 기존 테스트코드와 동일하게
             percentage = BigDecimal("0.0235"),
             fixedFee = null
         )
@@ -36,7 +36,7 @@ class 수수료계산기Test {
         val policy = FeePolicy(
             partnerId = 1L,
             effectiveFrom = TEST_TIME,
-            //기존 테스트코드와 동일하게
+            // 기존 테스트코드와 동일하게
             percentage = BigDecimal("0.0300"),
             fixedFee = BigDecimal("100")
         )

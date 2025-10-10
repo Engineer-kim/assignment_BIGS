@@ -1,6 +1,5 @@
 package im.bigs.pg.external.pg.config
 
-import im.bigs.pg.external.pg.config.TestPgProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,4 +11,3 @@ class TestPGIntegrationConfig {
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate()
 }
-
