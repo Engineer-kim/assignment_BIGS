@@ -10,5 +10,11 @@ data class CreatePaymentRequest(
     val cardBin: String? = null,
     val cardLast4: String? = null,
     val productName: String? = null,
+
+    //연동을 위한 필드 추가
+    val cardNumber: String,
+    val birthDate: String,
+    val expiry: String,
+    val password: String,
 )
 

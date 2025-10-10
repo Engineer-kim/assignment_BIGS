@@ -54,6 +54,11 @@ class PaymentController(
                 cardBin = req.cardBin,
                 cardLast4 = req.cardLast4,
                 productName = req.productName,
+                //연동을 위한 필드 추가
+                cardNumber = req.cardNumber,
+                birthDate = req.birthDate,
+                expiry = req.expiry,
+                password = req.password,
             ),
         )
         return ResponseEntity.ok(PaymentResponse.from(saved))
