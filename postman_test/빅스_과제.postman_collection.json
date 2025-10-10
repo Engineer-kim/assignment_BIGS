@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "d775581e-169d-43d8-b56a-ddfcd11fa44a",
+		"name": "빅스_과제",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46283272",
+		"_collection_link": "https://sss-2011462.postman.co/workspace/99027e55-a165-45da-8eeb-b0762412fbd5/collection/46283272-d775581e-169d-43d8-b56a-ddfcd11fa44a?action=share&source=collection_link&creator=46283272"
+	},
+	"item": [
+		{
+			"name": "GET",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/payments?partnerId=1&status=APPROVED&from=2025-10-01T00:00:00&to=2026-01-02T00:00:00&limit=20&cursor=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"payments"
+					],
+					"query": [
+						{
+							"key": "partnerId",
+							"value": "1"
+						},
+						{
+							"key": "status",
+							"value": "APPROVED"
+						},
+						{
+							"key": "from",
+							"value": "2025-10-01T00:00:00"
+						},
+						{
+							"key": "to",
+							"value": "2026-01-02T00:00:00"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "cursor",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"partnerId\": 1,\r\n    \"amount\": 10000,\r\n    \"cardBin\": \"11111111\",\r\n    \"cardLast4\": \"1111\",\r\n    \"productName\": \"테스트 상품 A\",\r\n    \r\n    \"cardNumber\": \"1111-1111-1111-1111\",\r\n    \"birthDate\": \"19900101\",\r\n    \"expiry\": \"1227\",\r\n    \"password\": \"12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/payments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"payments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
