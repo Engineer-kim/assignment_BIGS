@@ -9,6 +9,7 @@ import im.bigs.pg.application.payment.port.`in`.PaymentCommand
 import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.out.PaymentQuery
 import im.bigs.pg.domain.payment.PaymentStatus
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -43,6 +44,7 @@ class PaymentController(
      * @param req 결제 요청 본문
      * @return 생성된 결제 요약 응답
      */
+    @Operation(summary = "결제 생성", description = "결제 승인후 결제 정보 저장")
     @PostMapping
     fun create(@RequestBody req: CreatePaymentRequest): ResponseEntity<PaymentResponse> {
         val saved = paymentUseCase.pay(
@@ -79,6 +81,7 @@ class PaymentController(
      * http://localhost:8080/api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01%2000:00:00&to=2025-01-31%2023:59:59&limit=5&cursor=
      * 테스트 URL(포스트맨으로)
      */
+    @Operation(summary = "결제 내역 조회(페이지네이션 포함)", description = "결제 내역 정보 조회")
     @GetMapping
     fun query(
         @RequestParam(required = false) partnerId: Long?,

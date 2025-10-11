@@ -130,6 +130,7 @@ GET /api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01T00:00:00Z&to=20
 ## 10. 선택 과제(가산점)
 - 추가 제휴사 연동(Adapter 추가 및 전략 선택)
 - 오픈API 문서화(springdoc 등) 또는 간단한 운영지표(로그/메트릭)
+  -> SpringDoc => http://localhost:8080/swagger-ui/index.html 로 확인 
 - MariaDB 등 외부 DB로 전환(docker-compose 포함) 및 마이그레이션 도구 적용
 
 ## 11. 참고자료
